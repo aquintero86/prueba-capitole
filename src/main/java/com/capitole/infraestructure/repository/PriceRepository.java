@@ -4,9 +4,11 @@ import com.capitole.infraestructure.repository.model.PriceModel;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 
+@Repository
 public interface PriceRepository extends CrudRepository<PriceModel, Integer> {
 
     @Query(value = "select p.* FROM prices p where p.product_id =:product_id and p.brand_id =:brand_id " +

@@ -8,10 +8,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Service
@@ -25,10 +25,19 @@ public class PriceServiceImpl implements  PriceService{
 
     @Override
     public PriceResponse getPriceByApplyDate(PriceRequest priceRequest) {
-        Stream<PriceModel> priceModelsStream = StreamSupport
-                .stream(repository.findPriceByApplyDate(priceRequest.getProductId()
-                        , priceRequest.getBrandId(), priceRequest.getApplyDate()).spliterator(), false);
-        PriceModel priceModel =validateResultsQuery(priceModelsStream);
+
+        Collection<PriceModel> priceModelIterable=
+                StreamSupport.stream(repository.findPriceByApplyDate(priceRequest.getProductId()
+                                , priceRequest.getBrandId(), priceRequest.getApplyDate()).spliterator(), false)
+                        .collect(Collectors.toList());
+
+        Comparator<PriceModel> startDateComparator = Comparator.comparing(PriceModel::getStartDate);
+        PriceModel priceModel  =priceModelIterable.isEmpty()? null :
+                StreamSupport
+                .stream(priceModelIterable.spliterator(), false)
+                .filter(p-> p.getStartDate() != null)
+                .max(startDateComparator)
+                .get();
 
         return Optional.ofNullable(priceModel)
                 .map(
@@ -45,14 +54,5 @@ public class PriceServiceImpl implements  PriceService{
                 .orElseThrow(() ->new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Prices not found"));
     }
 
-    private PriceModel validateResultsQuery(Stream<PriceModel> stream) {
-        Comparator<PriceModel> startDateComparator = Comparator.comparing(PriceModel::getStartDate);
-        if(stream.count() > 0)
-            return  stream
-                    .filter(p-> p.getStartDate() != null)
-                    .max(startDateComparator)
-                    .get();
-        else
-            return null;
-    }
+
 }

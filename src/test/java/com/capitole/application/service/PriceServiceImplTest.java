@@ -37,26 +37,7 @@ public class PriceServiceImplTest{
         Assertions.assertThat(response).isNotNull();
     }
 
-    public PriceModel buildPriceModel(){
-        String str = "2021-04-05 00:00:00";
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        LocalDateTime dateTime = LocalDateTime.parse(str, formatter);
-        String strS = "2021-01-05 00:00:00";
-        LocalDateTime dateTimeS = LocalDateTime.parse(strS, formatter);
-        /*return PriceModel.builder()
-                .id(1)
-                .productId(1)
-                .brandId(1)
-                .priceList(0)
-                .startDate(dateTimeS)
-                .endDate(dateTime)
-                .priority(1)
-                .price(BigDecimal.valueOf(20))
-                .curr("EUR")
-                .build();**/
-        return new PriceModel();
 
-    }
     public PriceRequest buildPriceRequest(){
         String str = "2021-04-05 00:00:01";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -64,7 +45,7 @@ public class PriceServiceImplTest{
         return PriceRequest.builder()
                 .applyDate(dateTime)
                 .brandId(1)
-                .ProductId(1)
+                .ProductId(35455)
                 .build();
     }
 
