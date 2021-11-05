@@ -13,7 +13,6 @@ import java.time.LocalDateTime;
 @Table(name = "prices")
 @Entity
 @Getter
-@Builder
 public class PriceModel {
     @Id
     @Column(name = "id", nullable = false)
