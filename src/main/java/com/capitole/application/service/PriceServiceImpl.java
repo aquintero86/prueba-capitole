@@ -32,10 +32,11 @@ public class PriceServiceImpl implements  PriceService{
                         .collect(Collectors.toList());
 
         Comparator<PriceModel> startDateComparator = Comparator.comparing(PriceModel::getStartDate);
+        Comparator<PriceModel> priorityComparator = Comparator.comparing(PriceModel::getPriority);
         PriceModel priceModel  =priceModelIterable.isEmpty()? null :
                 StreamSupport
                 .stream(priceModelIterable.spliterator(), false)
-                .filter(p-> p.getStartDate() != null)
+                .filter(p-> p.getStartDate() != null ).sorted(priorityComparator)
                 .max(startDateComparator)
                 .get();
 
