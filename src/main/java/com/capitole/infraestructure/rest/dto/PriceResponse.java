@@ -3,12 +3,14 @@ package com.capitole.infraestructure.rest.dto;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
+import lombok.Getter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Builder
+@Getter
 public class PriceResponse {
 
     @JsonProperty("ProductId")
