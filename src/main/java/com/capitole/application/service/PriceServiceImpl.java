@@ -1,8 +1,8 @@
 package com.capitole.application.service;
 
-import com.capitole.domain.PriceRequest;
-import com.capitole.infraestructure.repository.PriceRepository;
-import com.capitole.infraestructure.repository.model.PriceModel;
+import com.capitole.infraestructure.rest.dto.PriceRequest;
+import com.capitole.domain.repository.PriceRepository;
+import com.capitole.domain.model.PriceModel;
 import com.capitole.infraestructure.rest.dto.PriceResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;

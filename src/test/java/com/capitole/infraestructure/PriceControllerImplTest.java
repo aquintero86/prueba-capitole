@@ -1,7 +1,7 @@
 package com.capitole.infraestructure;
 
 import com.capitole.application.service.PriceService;
-import com.capitole.domain.PriceRequest;
+import com.capitole.infraestructure.rest.dto.PriceRequest;
 import com.capitole.infraestructure.rest.PriceControllerImpl;
 import com.capitole.infraestructure.rest.dto.PriceResponse;
 import org.assertj.core.api.Assertions;

@@ -1,4 +1,4 @@
-package com.capitole.domain;
+package com.capitole.infraestructure.rest.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;

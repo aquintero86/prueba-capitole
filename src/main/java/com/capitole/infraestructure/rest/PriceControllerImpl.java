@@ -1,7 +1,7 @@
 package com.capitole.infraestructure.rest;
 
 import com.capitole.application.service.PriceService;
-import com.capitole.domain.PriceRequest;
+import com.capitole.infraestructure.rest.dto.PriceRequest;
 import com.capitole.infraestructure.rest.dto.PriceResponse;
 import io.swagger.annotations.Api;
 import org.springframework.http.ResponseEntity;
@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @Api
-public class PriceControllerImpl implements PriceController{
+public class PriceControllerImpl implements IPrice {
 
     private final PriceService priceService;
 

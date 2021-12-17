@@ -1,6 +1,5 @@
-package com.capitole.infraestructure.repository.model;
+package com.capitole.domain.model;
 
-import lombok.Builder;
 import lombok.Getter;
 
 import javax.persistence.Column;

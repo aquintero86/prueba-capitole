@@ -1,8 +1,8 @@
 package com.capitole.application.service;
 
 
-import com.capitole.domain.PriceRequest;
-import com.capitole.infraestructure.repository.PriceRepository;
+import com.capitole.infraestructure.rest.dto.PriceRequest;
+import com.capitole.domain.repository.
 import com.capitole.infraestructure.rest.dto.PriceResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.Rule;

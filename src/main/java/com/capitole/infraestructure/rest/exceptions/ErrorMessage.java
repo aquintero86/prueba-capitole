@@ -1,4 +1,4 @@
-package com.capitole.infraestructure.rest.utils;
+package com.capitole.infraestructure.rest.exceptions;
 
 import java.util.List;
 

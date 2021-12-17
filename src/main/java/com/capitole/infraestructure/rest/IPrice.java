@@ -1,6 +1,6 @@
 package com.capitole.infraestructure.rest;
 
-import com.capitole.domain.PriceRequest;
+import com.capitole.infraestructure.rest.dto.PriceRequest;
 import com.capitole.infraestructure.rest.dto.PriceResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.validation.Valid;
 
 @RequestMapping(value = "/")
-public interface PriceController {
+public interface IPrice {
 
     @GetMapping(
             value = "/price",

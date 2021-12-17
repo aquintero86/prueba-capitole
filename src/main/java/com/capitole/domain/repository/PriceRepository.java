@@ -1,6 +1,6 @@
-package com.capitole.infraestructure.repository;
+package com.capitole.domain.repository;
 
-import com.capitole.infraestructure.repository.model.PriceModel;
+import com.capitole.domain.model.PriceModel;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 import org.springframework.data.repository.query.Param;
