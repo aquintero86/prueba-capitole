@@ -1,8 +1,8 @@
 package com.capitole.application.service;
 
 
+import com.capitole.domain.repository.PriceRepository;
 import com.capitole.infraestructure.rest.dto.PriceRequest;
-import com.capitole.domain.repository.
 import com.capitole.infraestructure.rest.dto.PriceResponse;
 import org.assertj.core.api.Assertions;
 import org.junit.Rule;
@@ -90,8 +90,9 @@ public class PriceServiceImplTest{
         return PriceRequest.builder()
                 .applyDate(dateTime)
                 .brandId(1)
-                .ProductId(35455)
+                .productId(35455)
                 .build();
+
     }
 
 }

@@ -15,4 +15,5 @@ public interface PriceRepository extends CrudRepository<PriceModel, Integer> {
             "and p.start_date < parsedatetime(:dateToApply, 'yyyy-MM-dd hh:mm:ss') and p.end_date > parsedatetime(:dateToApply, 'yyyy-MM-dd hh:mm:ss')", nativeQuery = true)
     public Iterable<PriceModel> findPriceByApplyDate(@Param("product_id") int productId, @Param("brand_id") int brandId, @Param("dateToApply") LocalDateTime dateToApply);
 
+
 }

@@ -1,24 +1,28 @@
 package com.capitole.infraestructure;
 
+
 import com.capitole.application.service.PriceService;
 import com.capitole.infraestructure.rest.dto.PriceRequest;
 import com.capitole.infraestructure.rest.PriceControllerImpl;
 import com.capitole.infraestructure.rest.dto.PriceResponse;
+import com.capitole.infraestructure.rest.exceptions.RestResponseException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.assertj.core.api.Assertions;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.util.LinkedMultiValueMap;
-
+import org.springframework.web.server.ResponseStatusException;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -29,66 +33,106 @@ import java.time.format.DateTimeFormatter;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+@RunWith(MockitoJUnitRunner.class)
 public class PriceControllerImplTest {
     @InjectMocks
-    PriceControllerImpl subject;
+    private PriceControllerImpl subject;
 
-    @Autowired
     private MockMvc mockMvc;
 
     @Mock
     PriceService priceService;
 
+    @Rule
+   public ExpectedException thrown = ExpectedException.none();
 
-    private LinkedMultiValueMap<String, String> params;
 
     @Before
     public void setup() {
 
         MockitoAnnotations.openMocks(this);
-        this.mockMvc = MockMvcBuilders.standaloneSetup(subject).build();
+        this.mockMvc = MockMvcBuilders.standaloneSetup(subject)
+                .setControllerAdvice(new RestResponseException())
+                .build();
 
     }
 
+
     @Test
     public void shouldResponseOkGetPrice() throws Exception {
-        when(priceService.getPriceByApplyDate(buidPriceRequest())).thenReturn(buidPriceResponse());
+        when(priceService.getPriceByApplyDate(buildPriceRequest())).thenReturn(buildPriceResponse());
 
         ResponseEntity<PriceResponse> response =
-                subject.getPrice( buidPriceRequest());
+                subject.getPrice( buildPriceRequest());
 
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
     @Test
+    public void shouldResponseNotFound() throws Exception {
+        when(priceService.getPriceByApplyDate(buildPriceRequest())).thenReturn(buildPriceResponse());
+        thrown.expect(ResponseStatusException.class);
+        ResponseEntity<PriceResponse> response =
+                subject.getPrice( buildPriceRequest());
+
+        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
+    }
+
+
+
+    @Test
     public void shouldResponseBadRequestForNullDate() throws Exception {
-        params = new LinkedMultiValueMap<>();
-        params.add("ProductId", "35455");
-        params.add("BrandId", "1");
-        String responseValidate = "{\"applyDate\": \"Date cannot be null\" }";
-        ResultActions resultActions = this.mockMvc.perform(get("/price")
-                        .params(params)
+        ObjectMapper Obj = new ObjectMapper();
+        String jsonStr = Obj.writeValueAsString(buildPriceRequestDateNull());
+        mockMvc.perform(get("/price")
                         .contentType("application/json")
-                )
+                        .content(jsonStr))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString()
+                .contains("applyDate : Date can't be null");
+
     }
 
     @Test
     public void shouldResponseBadRequestForNullBrand() throws Exception {
-        params = new LinkedMultiValueMap<>();
-        params.add("ProductId", "35455");
-        params.add("ApplyDate","2020-06-14 00:00:02");
-        this.mockMvc.perform(get("/price")
-                        .params(params)
+        ObjectMapper Obj = new ObjectMapper();
+        String jsonStr = Obj.writeValueAsString(buildPriceRequestBrandNull());
+        mockMvc.perform(get("/price")
                         .contentType("application/json")
-                )
+                        .content(jsonStr))
                 .andDo(MockMvcResultHandlers.print())
-                .andExpect(status().isBadRequest());
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString()
+                .contains("brandId : must have valid value");;
+
+    }
+
+    @Test
+    public void shouldResponseBadRequestForNullProduct() throws Exception {
+        ObjectMapper Obj = new ObjectMapper();
+        String jsonStr = Obj.writeValueAsString(buildPriceRequestProductNull());
+        mockMvc.perform(get("/price")
+                        .contentType("application/json")
+                                .content(jsonStr)
+                        )
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(status().isBadRequest())
+                .andReturn()
+                .getResponse()
+                .getContentAsString()
+                .contains("productId : must have valid value");
+
     }
 
 
-    public PriceResponse buidPriceResponse(){
+
+
+    public PriceResponse buildPriceResponse(){
         String str = "2021-04-05 00:00:00";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime dateTime = LocalDateTime.parse(str, formatter);
@@ -100,17 +144,43 @@ public class PriceControllerImplTest {
                 .build();
     }
 
-    public PriceRequest buidPriceRequest(){
+    public PriceRequest buildPriceRequest(){
         String str = "2021-04-05 00:00:00";
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime dateTime = LocalDateTime.parse(str, formatter);
         return  PriceRequest.builder()
                 .brandId(1)
-                .ProductId(1)
+                .productId(1)
                 .applyDate(dateTime)
                 .build();
     }
 
+    public PriceRequest buildPriceRequestBrandNull(){
+        String str = "2021-04-05 00:00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime dateTime = LocalDateTime.parse(str, formatter);
+        return  PriceRequest.builder()
+                .productId(1)
+                .build();
+    }
+
+
+    public PriceRequest buildPriceRequestProductNull(){
+        String str = "2021-04-05 00:00:00";
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        LocalDateTime dateTime = LocalDateTime.parse(str, formatter);
+        return  PriceRequest.builder()
+                .brandId(1)
+                .build();
+    }
+    public PriceRequest buildPriceRequestDateNull(){
+        return  PriceRequest.builder()
+                .productId(1)
+                .brandId(1)
+                .build();
+
+
+    }
 
 
 }

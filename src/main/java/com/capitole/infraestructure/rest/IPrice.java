@@ -9,11 +9,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.validation.Valid;
 
+
 @RequestMapping(value = "/")
 public interface IPrice {
 
     @GetMapping(
             value = "/price",
+            headers="Accept=application/json",
             produces = {"application/json"},
             consumes = {"application/json"})
     ResponseEntity<PriceResponse> getPrice(@Valid @RequestBody PriceRequest priceRequest);

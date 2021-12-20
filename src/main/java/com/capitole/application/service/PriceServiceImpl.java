@@ -10,7 +10,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -25,9 +24,8 @@ public class PriceServiceImpl implements  PriceService{
 
     @Override
     public PriceResponse getPriceByApplyDate(PriceRequest priceRequest) {
-
-        Collection<PriceModel> priceModelIterable=
-                StreamSupport.stream(repository.findPriceByApplyDate(priceRequest.getProductId()
+        PriceResponse priceResponse = null;
+        Collection<PriceModel> priceModelIterable= StreamSupport.stream(repository.findPriceByApplyDate(priceRequest.getProductId()
                                 , priceRequest.getBrandId(), priceRequest.getApplyDate()).spliterator(), false)
                         .collect(Collectors.toList());
 
@@ -39,20 +37,22 @@ public class PriceServiceImpl implements  PriceService{
                 .filter(p-> p.getStartDate() != null ).sorted(priorityComparator)
                 .max(startDateComparator)
                 .get();
+        try{
+            priceResponse = PriceResponse.builder()
+                    .startDate(priceModel.getStartDate())
+                    .endDate(priceModel.getEndDate())
+                    .rateToApply(priceModel.getPriceList())
+                    .productuId(priceModel.getProductId())
+                    .brandId(priceModel.getBrandId())
+                    .finalPrice(priceModel.getPrice())
+                    .build();
 
-        return Optional.ofNullable(priceModel)
-                .map(
-                        price -> {
-                            return PriceResponse.builder()
-                                    .startDate(price.getStartDate())
-                                    .endDate(price.getEndDate())
-                                    .rateToApply(price.getPriceList())
-                                    .productuId(price.getProductId())
-                                    .brandId(price.getBrandId())
-                                    .finalPrice(price.getPrice())
-                                    .build();
-                        })
-                .orElseThrow(() ->new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Prices not found"));
+        }catch (NullPointerException e){
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "Prices not found");
+        }
+
+        return priceResponse;
+
     }
 
 
