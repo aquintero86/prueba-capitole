@@ -1,7 +1,5 @@
 package com.capitole.application.service;
 
-
-import com.capitole.domain.repository.PriceRepository;
 import com.capitole.infraestructure.rest.dto.PriceRequest;
 import com.capitole.infraestructure.rest.dto.PriceResponse;
 import org.assertj.core.api.Assertions;
@@ -22,30 +20,21 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+
+
 @RunWith(SpringRunner.class)
 @SpringBootTest
 @TestPropertySource(locations = "classpath:application.properties")
-@Sql("classpath:db/migration/V20211103212209__V1_create_data.sql")
+@Sql("classpath:test.sql")
 @DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class PriceServiceImplTest{
 
     @Autowired
     PriceServiceImpl subject;
 
-    @Autowired
-    PriceRepository priceRepository;
-
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
-
-    @Test(expected= ResponseStatusException.class)
-    public void shouldReturnGetPriceThrowException(){
-      PriceResponse response =
-                subject.getPriceByApplyDate(buildPriceRequest("2021-04-05 00:00:01"));
-
-    }
-
 
 
     @Test
@@ -84,6 +73,11 @@ public class PriceServiceImplTest{
         Assertions.assertThat(response.getFinalPrice()).isEqualTo(BigDecimal.valueOf(38.95));
     }
 
+    @Test(expected = ResponseStatusException.class)
+    public void shouldReturnException(){
+        PriceRequest request = buildPriceRequest("2021-06-16 21:00:01");
+        subject.getPriceByApplyDate(request);
+    }
     public PriceRequest buildPriceRequest(String str){
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
         LocalDateTime dateTime = LocalDateTime.parse(str, formatter);
@@ -94,5 +88,7 @@ public class PriceServiceImplTest{
                 .build();
 
     }
+
+
 
 }

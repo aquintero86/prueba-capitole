@@ -25,19 +25,22 @@ public class PriceServiceImpl implements  PriceService{
     @Override
     public PriceResponse getPriceByApplyDate(PriceRequest priceRequest) {
         PriceResponse priceResponse = null;
-        Collection<PriceModel> priceModelIterable= StreamSupport.stream(repository.findPriceByApplyDate(priceRequest.getProductId()
-                                , priceRequest.getBrandId(), priceRequest.getApplyDate()).spliterator(), false)
-                        .collect(Collectors.toList());
 
-        Comparator<PriceModel> startDateComparator = Comparator.comparing(PriceModel::getStartDate);
-        Comparator<PriceModel> priorityComparator = Comparator.comparing(PriceModel::getPriority);
-        PriceModel priceModel  =priceModelIterable.isEmpty()? null :
-                StreamSupport
-                .stream(priceModelIterable.spliterator(), false)
-                .filter(p-> p.getStartDate() != null ).sorted(priorityComparator)
-                .max(startDateComparator)
-                .get();
+        Iterable<PriceModel> prices = repository.findPriceByApplyDate(priceRequest.getProductId()
+                , priceRequest.getBrandId(), priceRequest.getApplyDate());
+
         try{
+            Collection<PriceModel> priceModelIterable= StreamSupport.stream(prices.spliterator(), false)
+                    .collect(Collectors.toList());
+
+            Comparator<PriceModel> startDateComparator = Comparator.comparing(PriceModel::getStartDate);
+            Comparator<PriceModel> priorityComparator = Comparator.comparing(PriceModel::getPriority);
+            PriceModel priceModel  =priceModelIterable.isEmpty()? null :
+                    StreamSupport
+                            .stream(priceModelIterable.spliterator(), false)
+                            .filter(p-> p.getStartDate() != null ).sorted(priorityComparator)
+                            .max(startDateComparator)
+                            .get();
             priceResponse = PriceResponse.builder()
                     .startDate(priceModel.getStartDate())
                     .endDate(priceModel.getEndDate())

@@ -22,7 +22,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
-import org.springframework.web.server.ResponseStatusException;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 
@@ -42,6 +41,7 @@ public class PriceControllerImplTest {
 
     @Mock
     PriceService priceService;
+
 
     @Rule
    public ExpectedException thrown = ExpectedException.none();
@@ -68,15 +68,6 @@ public class PriceControllerImplTest {
         Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
     }
 
-    @Test
-    public void shouldResponseNotFound() throws Exception {
-        when(priceService.getPriceByApplyDate(buildPriceRequest())).thenReturn(buildPriceResponse());
-        thrown.expect(ResponseStatusException.class);
-        ResponseEntity<PriceResponse> response =
-                subject.getPrice( buildPriceRequest());
-
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-    }
 
 
 
